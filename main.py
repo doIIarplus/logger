@@ -85,6 +85,11 @@ class Main:
         
         if not actual_key:
             actual_key = current_key
+
+        if key == Key.pause:
+            self.appendlog("======================================================")
+            self.f.close()
+            exit()
         
         current_time = get_current_time_ms()
         print(f"Press,{actual_key},{current_time - self.last_event_time_ms}")
@@ -108,11 +113,6 @@ class Main:
         
         if not actual_key:
             actual_key = current_key
-        
-        if key == Key.pause:
-            self.appendlog("======================================================")
-            self.f.close()
-            exit()
         
         current_time = get_current_time_ms()
         print(f"Release,{actual_key},{current_time - self.last_event_time_ms}")
